@@ -129,14 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget studentWidget(Student studentList) {
+  Widget studentWidget(Student student) {
     return InkWell(
         onTap: () {
-          _nameController.text = studentList.studentData!.name!;
-          _ageController.text = studentList.studentData!.age!;
-          _subjectController.text = studentList.studentData!.subject!;
+          _nameController.text = student.studentData!.name!;
+          _ageController.text = student.studentData!.age!;
+          _subjectController.text = student.studentData!.subject!;
           updateStudent = true;
-          studentDialog(key: studentList.key);
+          studentDialog(key: student.key);
         },
         child: Container(
           width: MediaQuery.of(context).size.width,
@@ -151,14 +151,28 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(studentList.studentData!.name!),
-                  Text(studentList.studentData!.age!),
-                  Text(studentList.studentData!.subject!),
+                  Text(student.studentData!.name!),
+                  Text(student.studentData!.age!),
+                  Text(student.studentData!.subject!),
                 ],
               ),
-              const Icon(
-                Icons.delete,
-                color: Colors.amber,
+              InkWell(
+                onTap: () {
+                  dbRef
+                      .child('Students')
+                      .child(student.key!)
+                      .remove()
+                      .then((value) {
+                    int index = studentList
+                        .indexWhere((element) => element.key == student.key!);
+                    studentList.removeAt(index);
+                    setState(() {});
+                  });
+                },
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.amber,
+                ),
               ),
             ],
           ),
